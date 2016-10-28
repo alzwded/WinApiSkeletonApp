@@ -96,28 +96,28 @@ static void Help(LPWSTR)
     for(auto&& i : g_commandArgs)
     {
         if(std::get<0>(i.second)) {
-            Log(L"/%carg\t%s\n", i.first, std::get<1>(i.second));
-            ss << L'/' << i.first << L"arg\t" << std::get<1>(i.second) << std::endl;
+            Log(L"/%carg\t%s\n", i.first, std::get<1>(i.second).c_str());
+            ss << L'/' << i.first << L"arg\t" << std::get<1>(i.second).c_str() << std::endl;
         } else {
-            Log(L"/%c\t%s\n", i.first, std::get<1>(i.second));
-            ss << L'/' << i.first << L"\t" << std::get<1>(i.second) << std::endl;
+            Log(L"/%c\t%s\n", i.first, std::get<1>(i.second).c_str());
+            ss << L'/' << i.first << L"\t" << std::get<1>(i.second).c_str() << std::endl;
         }
     }
     MessageBox(hWnd, ss.str().c_str(), L"WinApp", MB_OK);
     exit(2);
 }
 
-static void ParseArgs(LPWSTR lpCmdLine)
+static void ParseArgs()
 {
     int argc;
-    LPWSTR* argv = CommandLineToArgvW(lpCmdLine, &argc);
+    LPWSTR* argv = CommandLineToArgvW(GetCommandLineW(), &argc);
     if(!argv)
     {
         Log(L"Could not get command line arguments: %d\n", GetLastError());
         return;
     }
 
-    for(size_t i = 0; i < argc; ++i)
+    for(size_t i = 1; i < argc; ++i)
     {
         auto&& arg = argv[i];
         if(arg[0] != L'/' || !arg[1])
@@ -149,7 +149,7 @@ int WINAPI wWinMain(
     SetProcessDPIAware();
     Log(_T("Launched with: %s\n"), lpCmdLine);
 
-    ParseArgs(lpCmdLine);
+    ParseArgs();
 
     if(g_debug) __debugbreak();
 
